@@ -1,0 +1,159 @@
+version: "3.9"
+
+services:
+  # PostgreSQL Database (optional - use RDS/managed DB in production)
+  # Uncomment if you want to run PostgreSQL in Docker
+  # db:
+  #   image: postgres:18.0-alpine
+  #   environment:
+  #     POSTGRES_DB: finsmartdb
+  #     POSTGRES_USER: finsmart
+  #     POSTGRES_PASSWORD: ${DB_PASSWORD}
+  #   volumes:
+  #     - postgres-data:/var/lib/postgresql/data
+  #   networks:
+  #     - appnet
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U finsmart"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+
+  # AI Service (FastAPI)
+  ai:
+    build:
+      context: ./ai
+      dockerfile: Dockerfile
+    image: finsmart/ai:latest
+    container_name: finsmart-ai
+    restart: unless-stopped
+    networks:
+      - appnet
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # Backend API (Spring Boot)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: finsmart/backend:latest
+    container_name: finsmart-backend
+    restart: unless-stopped
+    env_file:
+      - .env.production
+    environment:
+      # Database connection
+      DB_URL: ${DB_URL}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      
+      # JWT configuration
+      APP_JWT_SECRET: ${APP_JWT_SECRET}
+      APP_JWT_ISSUER: ${APP_JWT_ISSUER:-finsmart}
+      APP_JWT_EXPIRES_MINUTES: ${APP_JWT_EXPIRES_MINUTES:-60}
+      
+      # Internal service URLs
+      AI_URL: http://ai:8001
+      
+      # CORS configuration
+      APP_FRONTEND_URL: ${APP_FRONTEND_URL:-https://your-domain.com}
+      
+      # Server configuration
+      APP_PORT: 8080
+      
+      # JVM memory settings (override in .env if needed)
+      JAVA_OPTS: ${JAVA_OPTS:--Xms256m -Xmx512m}
+    depends_on:
+      ai:
+        condition: service_healthy
+      # Uncomment if using containerized database
+      # db:
+      #   condition: service_healthy
+    networks:
+      - appnet
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Frontend (Nginx serving static React build)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        # Pass build-time variables if needed
+        VITE_API_URL: ${APP_FRONTEND_URL:-https://your-domain.com}/api
+    image: finsmart/frontend:latest
+    container_name: finsmart-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    networks:
+      - appnet
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Caddy Reverse Proxy (TLS + routing)
+  caddy:
+    image: caddy:2.8-alpine
+    container_name: finsmart-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp" # HTTP/3
+    volumes:
+      # Caddy configuration
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      
+      # Persistent storage for certificates
+      - caddy-data:/data
+      - caddy-config:/config
+      
+      # Optional: custom TLS certificates
+      # - ./caddy/certs:/certs:ro
+      
+      # Optional: access logs
+      - caddy-logs:/var/log/caddy
+    environment:
+      # Domain for TLS (can also be set in Caddyfile)
+      DOMAIN: ${DOMAIN:-your-domain.com}
+    depends_on:
+      frontend:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
+    networks:
+      - appnet
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  appnet:
+    driver: bridge
+
+volumes:
+  # PostgreSQL data (if using containerized DB)
+  # postgres-data:
+  
+  # Caddy persistent storage
+  caddy-data:
+    driver: local
+  caddy-config:
+    driver: local
+  caddy-logs:
+    driver: local

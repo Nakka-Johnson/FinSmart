@@ -1,0 +1,43 @@
+# EditorConfig: https://editorconfig.org
+root = true
+
+# Defaults for all files
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# TypeScript, JavaScript, JSON, YAML
+[*.{ts,tsx,js,jsx,json,yml,yaml}]
+indent_style = space
+indent_size = 2
+
+# XML (Maven POM, Spring configs)
+[*.xml]
+indent_style = space
+indent_size = 2
+
+# Java
+[*.java]
+indent_style = space
+indent_size = 4
+
+# Markdown
+[*.md]
+trim_trailing_whitespace = false
+
+# Shell scripts
+[*.{sh,ps1}]
+indent_style = space
+indent_size = 2
+
+# Python
+[*.py]
+indent_style = space
+indent_size = 4
+
+# SQL
+[*.sql]
+indent_style = space
+indent_size = 2

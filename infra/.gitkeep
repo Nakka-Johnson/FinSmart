@@ -1,0 +1,13 @@
+# Infrastructure as Code
+
+This directory is reserved for infrastructure configurations.
+
+Future contents may include:
+- Terraform/OpenTofu configurations
+- Pulumi projects
+- CloudFormation templates
+- Kubernetes manifests
+- Helm charts
+- Ansible playbooks
+
+Currently using Docker Compose for deployment (see root docker-compose.prod.yml).

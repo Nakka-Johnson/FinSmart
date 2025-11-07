@@ -8,7 +8,7 @@ services:
       POSTGRES_USER: finsmart
       POSTGRES_PASSWORD: finsmartpwd
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - dbdata:/var/lib/postgresql/data
     healthcheck:

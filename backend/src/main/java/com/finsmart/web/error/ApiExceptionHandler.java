@@ -176,6 +176,22 @@ public class ApiExceptionHandler {
     return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(errorResponse);
   }
 
+  @ExceptionHandler(org.springframework.web.server.ResponseStatusException.class)
+  public ResponseEntity<ErrorResponse> handleResponseStatusException(
+      org.springframework.web.server.ResponseStatusException ex, WebRequest request) {
+    ErrorResponse errorResponse =
+        ErrorResponse.builder()
+            .timestamp(Instant.now())
+            .status(ex.getStatusCode().value())
+            .error(ex.getStatusCode().toString())
+            .message(ex.getReason() != null ? ex.getReason() : "Request failed")
+            .path(extractPath(request))
+            .build();
+
+    log.warn("Response status exception ({}): {}", ex.getStatusCode(), ex.getReason());
+    return ResponseEntity.status(ex.getStatusCode()).body(errorResponse);
+  }
+
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorResponse> handleGlobalException(Exception ex, WebRequest request) {
     ErrorResponse errorResponse =

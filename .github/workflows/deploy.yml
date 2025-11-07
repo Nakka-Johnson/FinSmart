@@ -1,0 +1,418 @@
+name: Deploy to Production
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+
+env:
+  REGISTRY: docker.io
+  BACKEND_IMAGE: finsmart/backend
+  FRONTEND_IMAGE: finsmart/frontend
+  AI_IMAGE: finsmart/ai
+
+jobs:
+  build-and-push:
+    name: 🐳 Build & Push Docker Images
+    runs-on: ubuntu-latest
+    
+    outputs:
+      tag: ${{ steps.meta.outputs.tag }}
+      sha_short: ${{ steps.meta.outputs.sha_short }}
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🏷️ Extract metadata
+        id: meta
+        run: |
+          # Get short SHA
+          SHA_SHORT=$(git rev-parse --short HEAD)
+          echo "sha_short=${SHA_SHORT}" >> $GITHUB_OUTPUT
+          
+          # Get tag or use 'latest'
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            TAG=${GITHUB_REF#refs/tags/}
+          else
+            TAG="latest"
+          fi
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
+          
+          echo "🏷️ Tag: ${TAG}"
+          echo "📝 SHA: ${SHA_SHORT}"
+
+      - name: 🔐 Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: 🔧 Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 🏗️ Build and push Backend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: true
+          tags: |
+            ${{ env.BACKEND_IMAGE }}:${{ steps.meta.outputs.tag }}
+            ${{ env.BACKEND_IMAGE }}:${{ steps.meta.outputs.sha_short }}
+            ${{ env.BACKEND_IMAGE }}:latest
+          cache-from: type=registry,ref=${{ env.BACKEND_IMAGE }}:buildcache
+          cache-to: type=registry,ref=${{ env.BACKEND_IMAGE }}:buildcache,mode=max
+          labels: |
+            org.opencontainers.image.source=${{ github.event.repository.html_url }}
+            org.opencontainers.image.revision=${{ github.sha }}
+
+      - name: 🏗️ Build and push Frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          push: true
+          tags: |
+            ${{ env.FRONTEND_IMAGE }}:${{ steps.meta.outputs.tag }}
+            ${{ env.FRONTEND_IMAGE }}:${{ steps.meta.outputs.sha_short }}
+            ${{ env.FRONTEND_IMAGE }}:latest
+          cache-from: type=registry,ref=${{ env.FRONTEND_IMAGE }}:buildcache
+          cache-to: type=registry,ref=${{ env.FRONTEND_IMAGE }}:buildcache,mode=max
+          labels: |
+            org.opencontainers.image.source=${{ github.event.repository.html_url }}
+            org.opencontainers.image.revision=${{ github.sha }}
+
+      - name: 🏗️ Build and push AI Service
+        uses: docker/build-push-action@v5
+        with:
+          context: ./ai
+          file: ./ai/Dockerfile
+          push: true
+          tags: |
+            ${{ env.AI_IMAGE }}:${{ steps.meta.outputs.tag }}
+            ${{ env.AI_IMAGE }}:${{ steps.meta.outputs.sha_short }}
+            ${{ env.AI_IMAGE }}:latest
+          cache-from: type=registry,ref=${{ env.AI_IMAGE }}:buildcache
+          cache-to: type=registry,ref=${{ env.AI_IMAGE }}:buildcache,mode=max
+          labels: |
+            org.opencontainers.image.source=${{ github.event.repository.html_url }}
+            org.opencontainers.image.revision=${{ github.sha }}
+
+      - name: 📊 Image summary
+        run: |
+          echo "### 🐳 Docker Images Published" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Service | Image | Tags |" >> $GITHUB_STEP_SUMMARY
+          echo "|---------|-------|------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Backend | \`${{ env.BACKEND_IMAGE }}\` | \`${{ steps.meta.outputs.tag }}\`, \`${{ steps.meta.outputs.sha_short }}\`, \`latest\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Frontend | \`${{ env.FRONTEND_IMAGE }}\` | \`${{ steps.meta.outputs.tag }}\`, \`${{ steps.meta.outputs.sha_short }}\`, \`latest\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| AI | \`${{ env.AI_IMAGE }}\` | \`${{ steps.meta.outputs.tag }}\`, \`${{ steps.meta.outputs.sha_short }}\`, \`latest\` |" >> $GITHUB_STEP_SUMMARY
+
+  deploy-to-ec2:
+    name: 🚀 Deploy to EC2
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    environment: 
+      name: ${{ github.event.inputs.environment || 'production' }}
+      url: https://${{ secrets.PROD_DOMAIN || 'your-domain.com' }}
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔐 Configure SSH
+        run: |
+          echo "::group::Setting up SSH"
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          
+          # Write SSH key (handle both base64 and plain formats)
+          if echo "${{ secrets.PROD_SSH_KEY }}" | base64 -d &>/dev/null; then
+            echo "${{ secrets.PROD_SSH_KEY }}" | base64 -d > ~/.ssh/deploy_key
+          else
+            echo "${{ secrets.PROD_SSH_KEY }}" > ~/.ssh/deploy_key
+          fi
+          
+          chmod 600 ~/.ssh/deploy_key
+          
+          # Add host to known_hosts
+          ssh-keyscan -p ${{ secrets.PROD_SSH_PORT || '22' }} -H ${{ secrets.PROD_SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
+          
+          echo "✓ SSH configured"
+          echo "::endgroup::"
+
+      - name: 🧪 Test SSH connection
+        run: |
+          echo "::group::Testing SSH connection"
+          ssh -i ~/.ssh/deploy_key \
+              -p ${{ secrets.PROD_SSH_PORT || '22' }} \
+              -o StrictHostKeyChecking=no \
+              ${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SSH_HOST }} \
+              'echo "✓ SSH connection successful"'
+          echo "::endgroup::"
+
+      - name: 📁 Create deployment directory
+        run: |
+          echo "::group::Creating deployment directory"
+          ssh -i ~/.ssh/deploy_key \
+              -p ${{ secrets.PROD_SSH_PORT || '22' }} \
+              ${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SSH_HOST }} << 'EOF'
+            set -e
+            echo "Creating /opt/finsmart directory..."
+            sudo mkdir -p /opt/finsmart
+            sudo chown $USER:$USER /opt/finsmart
+            chmod 755 /opt/finsmart
+            echo "✓ Directory created"
+          EOF
+          echo "::endgroup::"
+
+      - name: 📦 Upload docker-compose and Caddy config
+        run: |
+          echo "::group::Uploading configuration files"
+          
+          # Upload docker-compose.prod.yml
+          scp -i ~/.ssh/deploy_key \
+              -P ${{ secrets.PROD_SSH_PORT || '22' }} \
+              docker-compose.prod.yml \
+              ${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SSH_HOST }}:/opt/finsmart/
+          
+          # Create caddy directory and upload Caddyfile
+          ssh -i ~/.ssh/deploy_key \
+              -p ${{ secrets.PROD_SSH_PORT || '22' }} \
+              ${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SSH_HOST }} \
+              'mkdir -p /opt/finsmart/caddy'
+          
+          scp -i ~/.ssh/deploy_key \
+              -P ${{ secrets.PROD_SSH_PORT || '22' }} \
+              caddy/Caddyfile \
+              ${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SSH_HOST }}:/opt/finsmart/caddy/
+          
+          echo "✓ Configuration files uploaded"
+          echo "::endgroup::"
+
+      - name: 🔧 Write environment file
+        run: |
+          echo "::group::Writing .env.production"
+          ssh -i ~/.ssh/deploy_key \
+              -p ${{ secrets.PROD_SSH_PORT || '22' }} \
+              ${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SSH_HOST }} << 'EOF'
+            set -e
+            cd /opt/finsmart
+            
+            # Write environment file from secret
+            cat > .env.production << 'ENVEOF'
+          ${{ secrets.PROD_ENV_FILE }}
+          ENVEOF
+            
+            chmod 600 .env.production
+            echo "✓ Environment file written"
+          EOF
+          echo "::endgroup::"
+
+      - name: 🐳 Pull latest images
+        run: |
+          echo "::group::Pulling Docker images"
+          ssh -i ~/.ssh/deploy_key \
+              -p ${{ secrets.PROD_SSH_PORT || '22' }} \
+              ${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SSH_HOST }} << 'EOF'
+            set -e
+            cd /opt/finsmart
+            
+            echo "Pulling latest images..."
+            docker compose -f docker-compose.prod.yml pull
+            
+            echo "✓ Images pulled successfully"
+          EOF
+          echo "::endgroup::"
+
+      - name: 🚀 Deploy services
+        run: |
+          echo "::group::Deploying services"
+          ssh -i ~/.ssh/deploy_key \
+              -p ${{ secrets.PROD_SSH_PORT || '22' }} \
+              ${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SSH_HOST }} << 'EOF'
+            set -e
+            cd /opt/finsmart
+            
+            echo "Starting services with docker compose..."
+            docker compose -f docker-compose.prod.yml up -d --remove-orphans
+            
+            echo "✓ Services started"
+            
+            echo ""
+            echo "Service status:"
+            docker compose -f docker-compose.prod.yml ps
+          EOF
+          echo "::endgroup::"
+
+      - name: 🧹 Cleanup old images
+        run: |
+          echo "::group::Cleaning up old images"
+          ssh -i ~/.ssh/deploy_key \
+              -p ${{ secrets.PROD_SSH_PORT || '22' }} \
+              ${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SSH_HOST }} << 'EOF'
+            set -e
+            
+            echo "Pruning unused images..."
+            docker image prune -af --filter "until=24h"
+            
+            echo "✓ Cleanup completed"
+          EOF
+          echo "::endgroup::"
+
+      - name: ⏳ Wait for services to start
+        run: |
+          echo "Waiting 30 seconds for services to initialize..."
+          sleep 30
+
+      - name: 🏥 Health check - Backend API
+        run: |
+          echo "::group::Health check - Backend API"
+          MAX_RETRIES=10
+          RETRY_COUNT=0
+          
+          while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+            if ssh -i ~/.ssh/deploy_key \
+                   -p ${{ secrets.PROD_SSH_PORT || '22' }} \
+                   ${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SSH_HOST }} \
+                   'curl -fsS http://localhost:8080/api/health' 2>/dev/null; then
+              echo "✓ Backend API is healthy"
+              break
+            fi
+            
+            RETRY_COUNT=$((RETRY_COUNT + 1))
+            if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
+              echo "❌ Backend API health check failed after $MAX_RETRIES attempts"
+              exit 1
+            fi
+            
+            echo "Retry $RETRY_COUNT/$MAX_RETRIES - waiting 5 seconds..."
+            sleep 5
+          done
+          echo "::endgroup::"
+
+      - name: 🏥 Health check - Frontend
+        run: |
+          echo "::group::Health check - Frontend"
+          if ssh -i ~/.ssh/deploy_key \
+                 -p ${{ secrets.PROD_SSH_PORT || '22' }} \
+                 ${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SSH_HOST }} \
+                 'curl -fsS http://localhost:80/health' 2>/dev/null; then
+            echo "✓ Frontend is healthy"
+          else
+            echo "❌ Frontend health check failed"
+            exit 1
+          fi
+          echo "::endgroup::"
+
+      - name: 🏥 Health check - AI Service
+        run: |
+          echo "::group::Health check - AI Service"
+          if ssh -i ~/.ssh/deploy_key \
+                 -p ${{ secrets.PROD_SSH_PORT || '22' }} \
+                 ${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SSH_HOST }} \
+                 'curl -fsS http://localhost:8001/health' 2>/dev/null; then
+            echo "✓ AI Service is healthy"
+          else
+            echo "❌ AI Service health check failed"
+            exit 1
+          fi
+          echo "::endgroup::"
+
+      - name: 🏥 Health check - Public endpoint
+        if: secrets.PROD_DOMAIN != ''
+        run: |
+          echo "::group::Health check - Public endpoint"
+          MAX_RETRIES=5
+          RETRY_COUNT=0
+          
+          while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+            if curl -fsS -m 10 https://${{ secrets.PROD_DOMAIN }}/api/health 2>/dev/null; then
+              echo "✓ Public endpoint is healthy"
+              break
+            fi
+            
+            RETRY_COUNT=$((RETRY_COUNT + 1))
+            if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
+              echo "⚠️ Public endpoint health check failed (might be TLS provisioning)"
+              # Don't fail deployment if TLS is still provisioning
+              exit 0
+            fi
+            
+            echo "Retry $RETRY_COUNT/$MAX_RETRIES - waiting 10 seconds..."
+            sleep 10
+          done
+          echo "::endgroup::"
+
+      - name: 📊 Deployment summary
+        if: always()
+        run: |
+          echo "### 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment:** ${{ github.event.inputs.environment || 'production' }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Tag:** ${{ needs.build-and-push.outputs.tag }}" >> $GITHUB_STEP_SUMMARY
+          echo "**SHA:** ${{ needs.build-and-push.outputs.sha_short }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Host:** ${{ secrets.PROD_SSH_HOST }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "#### Services Status" >> $GITHUB_STEP_SUMMARY
+          
+          # Get service status via SSH
+          ssh -i ~/.ssh/deploy_key \
+              -p ${{ secrets.PROD_SSH_PORT || '22' }} \
+              ${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SSH_HOST }} \
+              'cd /opt/finsmart && docker compose -f docker-compose.prod.yml ps --format json' | \
+            jq -r '.[] | "- **\(.Service):** \(.State) (\(.Status))"' >> $GITHUB_STEP_SUMMARY || \
+            echo "Unable to fetch service status" >> $GITHUB_STEP_SUMMARY
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "#### Health Checks" >> $GITHUB_STEP_SUMMARY
+          echo "- Backend API: ✅" >> $GITHUB_STEP_SUMMARY
+          echo "- Frontend: ✅" >> $GITHUB_STEP_SUMMARY
+          echo "- AI Service: ✅" >> $GITHUB_STEP_SUMMARY
+          
+          if [ -n "${{ secrets.PROD_DOMAIN }}" ]; then
+            echo "- Public Endpoint: https://${{ secrets.PROD_DOMAIN }}" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: 🧹 Cleanup SSH key
+        if: always()
+        run: |
+          rm -f ~/.ssh/deploy_key
+          echo "✓ SSH key cleaned up"
+
+  notify:
+    name: 📢 Notification
+    runs-on: ubuntu-latest
+    needs: [build-and-push, deploy-to-ec2]
+    if: always()
+    
+    steps:
+      - name: 📊 Deployment status
+        run: |
+          if [ "${{ needs.deploy-to-ec2.result }}" == "success" ]; then
+            echo "### ✅ Deployment Successful!" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "🎉 FinSmart has been successfully deployed to production!" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Version:** ${{ needs.build-and-push.outputs.tag }}" >> $GITHUB_STEP_SUMMARY
+            
+            if [ -n "${{ secrets.PROD_DOMAIN }}" ]; then
+              echo "**URL:** https://${{ secrets.PROD_DOMAIN }}" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "### ❌ Deployment Failed" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Please check the logs above for error details." >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi

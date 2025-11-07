@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "prepare": "husky install","test":"echo \"no tests\" && exit 0"
+    "prepare": "husky install",
+    "test": "echo \"no tests\" && exit 0"
   },
   "keywords": [],
   "author": "",
@@ -13,5 +14,9 @@
   "devDependencies": {
     "husky": "^9.1.7",
     "lint-staged": "^16.2.6"
+  },
+  "dependencies": {
+    "react-router-dom": "^7.9.5",
+    "zustand": "^5.0.8"
   }
 }

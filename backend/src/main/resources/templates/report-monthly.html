@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>FinSmart Monthly Report</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+        
+        body {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            font-size: 11pt;
+            line-height: 1.5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #4A90E2;
+            padding-bottom: 15px;
+        }
+        
+        .header h1 {
+            margin: 0;
+            color: #4A90E2;
+            font-size: 24pt;
+        }
+        
+        .header h2 {
+            margin: 5px 0 0 0;
+            color: #666;
+            font-size: 14pt;
+            font-weight: normal;
+        }
+        
+        .user-info {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        
+        .section {
+            margin-bottom: 25px;
+        }
+        
+        .section-title {
+            font-size: 14pt;
+            font-weight: bold;
+            color: #4A90E2;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #4A90E2;
+            padding-bottom: 5px;
+        }
+        
+        .totals {
+            display: table;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+        
+        .totals-row {
+            display: table-row;
+        }
+        
+        .totals-label {
+            display: table-cell;
+            font-weight: bold;
+            padding: 5px 10px;
+            width: 50%;
+        }
+        
+        .totals-value {
+            display: table-cell;
+            text-align: right;
+            padding: 5px 10px;
+        }
+        
+        .debit {
+            color: #dc3545;
+        }
+        
+        .credit {
+            color: #28a745;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        
+        th {
+            background-color: #4A90E2;
+            color: white;
+            padding: 8px;
+            text-align: left;
+            font-weight: bold;
+        }
+        
+        td {
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        .amount {
+            text-align: right;
+        }
+        
+        .anomaly {
+            background-color: #fff3cd !important;
+        }
+        
+        .forecast-method {
+            font-size: 9pt;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+            text-align: center;
+            font-size: 9pt;
+            color: #666;
+        }
+        
+        .no-data {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>FinSmart — Monthly Report</h1>
+        <h2 th:text="${monthName} + ' ' + ${year}">Month Year</h2>
+    </div>
+    
+    <div class="user-info">
+        <strong>User:</strong> <span th:text="${user.fullName} ?: ${user.email}">User Name</span>
+    </div>
+    
+    <!-- Totals Section -->
+    <div class="section">
+        <div class="section-title">Monthly Summary</div>
+        <div class="totals">
+            <div class="totals-row">
+                <div class="totals-label">Total Spending (Debit):</div>
+                <div class="totals-value debit" th:text="'$' + ${#numbers.formatDecimal(totalDebit, 1, 2)}">$0.00</div>
+            </div>
+            <div class="totals-row">
+                <div class="totals-label">Total Income (Credit):</div>
+                <div class="totals-value credit" th:text="'$' + ${#numbers.formatDecimal(totalCredit, 1, 2)}">$0.00</div>
+            </div>
+            <div class="totals-row">
+                <div class="totals-label">Biggest Spending Category:</div>
+                <div class="totals-value" th:text="${biggestCategory} ?: 'N/A'">N/A</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Top Categories Section -->
+    <div class="section" th:if="${topCategories != null and !topCategories.isEmpty()}">
+        <div class="section-title">Top Spending Categories</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th class="amount">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="cat : ${topCategories}">
+                    <td th:text="${cat.category}">Category</td>
+                    <td class="amount debit" th:text="'$' + ${#numbers.formatDecimal(cat.total, 1, 2)}">$0.00</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Anomalies Section -->
+    <div class="section" th:if="${anomalies != null and !anomalies.isEmpty()}">
+        <div class="section-title">Unusual Transactions (Anomalies)</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Category</th>
+                    <th class="amount">Amount</th>
+                    <th class="amount">Z-Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="anomaly : ${anomalies}" class="anomaly">
+                    <td th:text="${anomaly.date}">2025-01-15</td>
+                    <td th:text="${anomaly.category} ?: 'Uncategorized'">Category</td>
+                    <td class="amount debit" th:text="'$' + ${#numbers.formatDecimal(anomaly.amount, 1, 2)}">$0.00</td>
+                    <td class="amount" th:text="${#numbers.formatDecimal(anomaly.score, 1, 2)}">0.00</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="no-data" th:if="${anomalies == null or anomalies.isEmpty()}">
+        <p>No unusual transactions detected this month.</p>
+    </div>
+    
+    <!-- Forecast Section -->
+    <div class="section" th:if="${forecast != null and !forecast.isEmpty()}">
+        <div class="section-title">Next Month Forecast</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th class="amount">Predicted Amount</th>
+                    <th>Method</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="f : ${forecast}">
+                    <td th:text="${f.category}">Category</td>
+                    <td class="amount" th:text="'$' + ${#numbers.formatDecimal(f.nextMonthForecast, 1, 2)}">$0.00</td>
+                    <td>
+                        <span th:text="${f.method}" class="forecast-method">SMA3</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Footer -->
+    <div class="footer">
+        <p>Generated on <span th:text="${#temporals.format(generatedAt, 'yyyy-MM-dd HH:mm:ss')}">2025-01-01 00:00:00</span></p>
+        <p>FinSmart — Your Personal Finance Assistant</p>
+    </div>
+</body>
+</html>

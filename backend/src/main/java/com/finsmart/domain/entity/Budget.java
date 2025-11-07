@@ -42,7 +42,7 @@ public class Budget {
   @NotNull
   @Min(1)
   @Max(12)
-  @Column(nullable = false)
+  @Column(name = "\"month\"", nullable = false)
   private Integer month;
 
   @NotNull

@@ -1,0 +1,129 @@
+.dashboard {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.dashboard h1 {
+  margin-bottom: 30px;
+  font-size: 32px;
+}
+
+.card {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.card h2 {
+  margin: 0 0 16px 0;
+  font-size: 20px;
+}
+
+.card-description {
+  color: #999;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.health-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.health-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.status {
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.status-ok {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+.status-error {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.status-checking {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+.insight-result {
+  margin-top: 20px;
+  padding: 16px;
+  background: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 8px;
+}
+
+.insight-result h3 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  color: #999;
+}
+
+.insight-result p {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.btn {
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: #646cff;
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #535bf2;
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid #646cff;
+  color: #646cff;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: rgba(100, 108, 255, 0.1);
+}
+
+@media (prefers-color-scheme: light) {
+  .card {
+    background: #ffffff;
+    border-color: #e5e5e5;
+  }
+
+  .insight-result {
+    background: #f9f9f9;
+    border-color: #e5e5e5;
+  }
+}

@@ -1,0 +1,33 @@
+# Docker Compose override for local development/testing
+# This file is used automatically when running: docker compose up
+# It overrides docker-compose.prod.yml for local testing without TLS
+
+version: "3.9"
+
+services:
+  backend:
+    environment:
+      # Use host.docker.internal for local database
+      DB_URL: jdbc:postgresql://host.docker.internal:5432/finsmartdb?sslmode=disable
+      APP_FRONTEND_URL: http://localhost:5173
+    ports:
+      # Expose for direct access during development
+      - "8080:8080"
+
+  frontend:
+    ports:
+      # Expose for direct access
+      - "8082:80"
+
+  ai:
+    ports:
+      # Expose for direct access
+      - "8001:8001"
+
+  caddy:
+    # Use simple HTTP configuration for local testing
+    volumes:
+      - ./caddy/Caddyfile.local:/etc/caddy/Caddyfile:ro
+    ports:
+      # Only HTTP for local
+      - "8083:80"
