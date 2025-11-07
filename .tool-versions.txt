@@ -1,0 +1,30 @@
+# FinSmart - Verified Tool Versions
+# ============================================================================
+# Last verified: 2025-11-05
+# ============================================================================
+
+# Java Development Kit
+java 17.0.16 (or any Java 17 LTS)
+
+# Maven (or use included mvnw wrapper)
+maven 3.9.11
+
+# Node.js (LTS recommended)
+nodejs 18.20.5 (or 20.x LTS)
+
+# Python
+python 3.11.10 (or 3.11.x)
+
+# PostgreSQL
+postgresql 18.0 (or 15+)
+
+# Docker Desktop (optional, for containerized deployment)
+docker 24.0+ with Docker Compose
+
+# ============================================================================
+# Version Management Tools (optional)
+# ============================================================================
+# - asdf: https://asdf-vm.com/
+# - sdkman: https://sdkman.io/ (Java/Maven)
+# - nvm: https://github.com/nvm-sh/nvm (Node.js)
+# - pyenv: https://github.com/pyenv/pyenv (Python)

@@ -1,0 +1,81 @@
+.header {
+  background: #1a1a1a;
+  border-bottom: 1px solid #333;
+  padding: 0 20px;
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+}
+
+.header-logo {
+  font-size: 20px;
+  font-weight: bold;
+  color: #646cff;
+  text-decoration: none;
+}
+
+.header-nav {
+  display: flex;
+  gap: 24px;
+}
+
+.header-nav a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 14px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.header-nav a:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.header-user {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.user-email {
+  color: #999;
+  font-size: 14px;
+}
+
+.logout-btn {
+  padding: 6px 16px;
+  font-size: 14px;
+  background: transparent;
+  border: 1px solid #646cff;
+  color: #646cff;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.logout-btn:hover {
+  background: #646cff;
+  color: white;
+}
+
+@media (prefers-color-scheme: light) {
+  .header {
+    background: #ffffff;
+    border-bottom: 1px solid #e5e5e5;
+  }
+
+  .header-nav a {
+    color: #333;
+  }
+
+  .user-email {
+    color: #666;
+  }
+}

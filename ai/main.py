@@ -1,26 +1,17 @@
-﻿from fastapi import FastAPI
-from pydantic import BaseModel, Field
-from typing import List, Literal
+﻿"""
+DEPRECATED: This file is kept for backwards compatibility only.
+Please use the new structure: uvicorn app.main:app --reload --port 8001
+"""
 
-app = FastAPI(title="FinSmart AI")
+import warnings
 
-class Txn(BaseModel):
-    date: str = Field(..., description="ISO date")
-    amount: float = Field(..., ge=0)
-    category: str
+warnings.warn(
+    "main.py is deprecated. Use 'uvicorn app.main:app' instead.",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
-class AnalyzeRequest(BaseModel):
-    transactions: List[Txn]
+# Import the new app for backwards compatibility
+from app.main import app
 
-@app.get("/health")
-def health():
-    return {"status": "ai ok"}
-
-@app.post("/analyze")
-def analyze(req: AnalyzeRequest):
-    total = sum(t.amount for t in req.transactions)
-    by_cat = {}
-    for t in req.transactions:
-        by_cat[t.category] = by_cat.get(t.category, 0) + t.amount
-    biggest = max(by_cat, key=by_cat.get) if by_cat else None
-    return {"summary": f"Total spent £{total:.2f}. Biggest category: {biggest}"}
+__all__ = ["app"]
