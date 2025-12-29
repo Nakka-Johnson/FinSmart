@@ -1,0 +1,7 @@
+{
+  "n_samples": 503,
+  "n_classes": 10,
+  "n_features": 107,
+  "cv_accuracy_mean": 0.9185148514851486,
+  "cv_accuracy_std": 0.030946890448453522
+}

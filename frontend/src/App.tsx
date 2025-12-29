@@ -1,11 +1,10 @@
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
-import { Shell } from '@/components/Shell';
+import { PremiumShell } from '@/components/PremiumShell';
 import { Guard } from '@/components/Guard';
-import { Toast } from '@/components/Toast';
 import { Login } from '@/pages/Login';
 import { Register } from '@/pages/Register';
-import { Dashboard } from '@/pages/Dashboard';
+import { DashboardV2 } from '@/pages/DashboardV2';
 import { Transactions } from '@/pages/Transactions';
 import { Budgets } from '@/pages/Budgets';
 import { Categories } from '@/pages/Categories';
@@ -15,6 +14,10 @@ import { OnboardingPage } from '@/pages/OnboardingPage';
 import { useAuthStore } from '@/store/auth';
 import { useToastStore } from '@/store/toast';
 import { set401Handler } from '@/api/http';
+import { initializeTheme } from '@/hooks/useTheme';
+
+// Initialize theme on load to prevent flash
+initializeTheme();
 
 function AppContent() {
   const navigate = useNavigate();
@@ -31,92 +34,89 @@ function AppContent() {
   }, [navigate, clearAuth, showToast]);
 
   return (
-    <>
-      <Toast />
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route
-          path="/"
-          element={
-            <Shell>
-              <Guard>
-                <Dashboard />
-              </Guard>
-            </Shell>
-          }
-        />
-        <Route
-          path="/dashboard"
-          element={
-            <Shell>
-              <Guard>
-                <Dashboard />
-              </Guard>
-            </Shell>
-          }
-        />
-        <Route
-          path="/transactions"
-          element={
-            <Shell>
-              <Guard>
-                <Transactions />
-              </Guard>
-            </Shell>
-          }
-        />
-        <Route
-          path="/budgets"
-          element={
-            <Shell>
-              <Guard>
-                <Budgets />
-              </Guard>
-            </Shell>
-          }
-        />
-        <Route
-          path="/categories"
-          element={
-            <Shell>
-              <Guard>
-                <Categories />
-              </Guard>
-            </Shell>
-          }
-        />
-        <Route
-          path="/insights"
-          element={
-            <Shell>
-              <Guard>
-                <InsightsPage />
-              </Guard>
-            </Shell>
-          }
-        />
-        <Route
-          path="/import"
-          element={
-            <Shell>
-              <Guard>
-                <CSVImportPage />
-              </Guard>
-            </Shell>
-          }
-        />
-        <Route
-          path="/onboarding"
-          element={
-            <Guard>
-              <OnboardingPage />
-            </Guard>
-          }
-        />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </>
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route
+        path="/"
+        element={
+          <Guard>
+            <PremiumShell>
+              <DashboardV2 />
+            </PremiumShell>
+          </Guard>
+        }
+      />
+      <Route
+        path="/dashboard"
+        element={
+          <Guard>
+            <PremiumShell>
+              <DashboardV2 />
+            </PremiumShell>
+          </Guard>
+        }
+      />
+      <Route
+        path="/transactions"
+        element={
+          <Guard>
+            <PremiumShell>
+              <Transactions />
+            </PremiumShell>
+          </Guard>
+        }
+      />
+      <Route
+        path="/budgets"
+        element={
+          <Guard>
+            <PremiumShell>
+              <Budgets />
+            </PremiumShell>
+          </Guard>
+        }
+      />
+      <Route
+        path="/categories"
+        element={
+          <Guard>
+            <PremiumShell>
+              <Categories />
+            </PremiumShell>
+          </Guard>
+        }
+      />
+      <Route
+        path="/insights"
+        element={
+          <Guard>
+            <PremiumShell>
+              <InsightsPage />
+            </PremiumShell>
+          </Guard>
+        }
+      />
+      <Route
+        path="/import"
+        element={
+          <Guard>
+            <PremiumShell>
+              <CSVImportPage />
+            </PremiumShell>
+          </Guard>
+        }
+      />
+      <Route
+        path="/onboarding"
+        element={
+          <Guard>
+            <OnboardingPage />
+          </Guard>
+        }
+      />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }
 

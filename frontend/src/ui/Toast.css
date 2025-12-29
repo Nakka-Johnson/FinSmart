@@ -1,0 +1,209 @@
+.ui-toast-container {
+  position: fixed;
+  z-index: var(--z-toast);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  pointer-events: none;
+  max-width: 420px;
+  width: 100%;
+}
+
+/* Positions */
+.ui-toast-container--top-right {
+  top: 0;
+  right: 0;
+}
+
+.ui-toast-container--top-left {
+  top: 0;
+  left: 0;
+}
+
+.ui-toast-container--bottom-right {
+  bottom: 0;
+  right: 0;
+  flex-direction: column-reverse;
+}
+
+.ui-toast-container--bottom-left {
+  bottom: 0;
+  left: 0;
+  flex-direction: column-reverse;
+}
+
+.ui-toast-container--top-center {
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.ui-toast-container--bottom-center {
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  flex-direction: column-reverse;
+}
+
+/* Toast */
+.ui-toast {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  pointer-events: auto;
+  opacity: 0;
+  transform: translateX(100%);
+  transition: all var(--transition-normal) ease-out;
+}
+
+.ui-toast--visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.ui-toast--leaving {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+/* Positions - left side toasts */
+.ui-toast-container--top-left .ui-toast,
+.ui-toast-container--bottom-left .ui-toast {
+  transform: translateX(-100%);
+}
+
+.ui-toast-container--top-left .ui-toast--visible,
+.ui-toast-container--bottom-left .ui-toast--visible {
+  transform: translateX(0);
+}
+
+.ui-toast-container--top-left .ui-toast--leaving,
+.ui-toast-container--bottom-left .ui-toast--leaving {
+  transform: translateX(-100%);
+}
+
+/* Positions - center toasts */
+.ui-toast-container--top-center .ui-toast,
+.ui-toast-container--bottom-center .ui-toast {
+  transform: translateY(-20px);
+}
+
+.ui-toast-container--top-center .ui-toast--visible,
+.ui-toast-container--bottom-center .ui-toast--visible {
+  transform: translateY(0);
+}
+
+.ui-toast-container--top-center .ui-toast--leaving,
+.ui-toast-container--bottom-center .ui-toast--leaving {
+  transform: translateY(-20px);
+}
+
+/* Icon */
+.ui-toast__icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+}
+
+/* Content */
+.ui-toast__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.ui-toast__title {
+  font-weight: var(--weight-medium);
+  color: var(--color-text-primary);
+  font-size: var(--text-sm);
+  line-height: var(--leading-tight);
+}
+
+.ui-toast__description {
+  margin-top: var(--space-1);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--leading-relaxed);
+}
+
+/* Close button */
+.ui-toast__close {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  margin: -2px -4px -2px 0;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-tertiary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.ui-toast__close:hover {
+  background-color: var(--color-bg-muted);
+  color: var(--color-text-primary);
+}
+
+.ui-toast__close:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* Type variants */
+.ui-toast--success {
+  border-left: 3px solid var(--color-positive);
+}
+
+.ui-toast--success .ui-toast__icon {
+  color: var(--color-positive);
+}
+
+.ui-toast--error {
+  border-left: 3px solid var(--color-danger);
+}
+
+.ui-toast--error .ui-toast__icon {
+  color: var(--color-danger);
+}
+
+.ui-toast--warning {
+  border-left: 3px solid var(--color-warning);
+}
+
+.ui-toast--warning .ui-toast__icon {
+  color: var(--color-warning);
+}
+
+.ui-toast--info {
+  border-left: 3px solid var(--color-info);
+}
+
+.ui-toast--info .ui-toast__icon {
+  color: var(--color-info);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .ui-toast {
+    transition: opacity var(--transition-fast);
+    transform: none !important;
+  }
+
+  .ui-toast--visible {
+    transform: none !important;
+  }
+
+  .ui-toast--leaving {
+    transform: none !important;
+  }
+}

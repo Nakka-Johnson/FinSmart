@@ -1,5 +1,6 @@
 package com.finsmart.service.ai;
 
+import com.finsmart.service.ai.dto.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,121 @@ public class AiClientService {
     this.restTemplate = restTemplate;
     this.aiBaseUrl = aiBaseUrl;
   }
+
+  // ==========================================================================
+  // AI v1 Endpoints (Real ML)
+  // ==========================================================================
+
+  /**
+   * Check AI service health and model status.
+   *
+   * @return Health response with model status
+   */
+  public AiHealthResponse health() {
+    try {
+      String url = aiBaseUrl + "/health";
+      ResponseEntity<AiHealthResponse> response =
+          restTemplate.getForEntity(url, AiHealthResponse.class);
+
+      if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+        return response.getBody();
+      } else {
+        throw new AiServiceException(
+            "AI service returned non-2xx status: " + response.getStatusCode());
+      }
+    } catch (RestClientException e) {
+      log.error("Failed to call AI health endpoint", e);
+      throw new AiServiceException("AI service unavailable", e);
+    }
+  }
+
+  /**
+   * Call AI v1 /merchants/normalise endpoint for merchant normalization.
+   *
+   * @param request Merchant normalization request
+   * @return Normalized merchants with scores and alternatives
+   */
+  public MerchantNormaliseResponse normaliseMerchants(MerchantNormaliseRequest request) {
+    try {
+      String url = aiBaseUrl + "/v1/merchants/normalise";
+      HttpHeaders headers = new HttpHeaders();
+      headers.setContentType(MediaType.APPLICATION_JSON);
+      HttpEntity<MerchantNormaliseRequest> httpRequest = new HttpEntity<>(request, headers);
+
+      ResponseEntity<MerchantNormaliseResponse> response =
+          restTemplate.postForEntity(url, httpRequest, MerchantNormaliseResponse.class);
+
+      if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+        return response.getBody();
+      } else {
+        throw new AiServiceException(
+            "AI service returned non-2xx status: " + response.getStatusCode());
+      }
+    } catch (RestClientException e) {
+      log.error("Failed to call AI v1 merchants/normalise endpoint", e);
+      throw new AiServiceException("AI service unavailable", e);
+    }
+  }
+
+  /**
+   * Call AI v1 /categories/predict endpoint for ML-based categorization.
+   *
+   * @param request Category prediction request
+   * @return Top-3 category predictions with confidence and explanations
+   */
+  public CategoryPredictResponse predictCategories(CategoryPredictRequest request) {
+    try {
+      String url = aiBaseUrl + "/v1/categories/predict";
+      HttpHeaders headers = new HttpHeaders();
+      headers.setContentType(MediaType.APPLICATION_JSON);
+      HttpEntity<CategoryPredictRequest> httpRequest = new HttpEntity<>(request, headers);
+
+      ResponseEntity<CategoryPredictResponse> response =
+          restTemplate.postForEntity(url, httpRequest, CategoryPredictResponse.class);
+
+      if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+        return response.getBody();
+      } else {
+        throw new AiServiceException(
+            "AI service returned non-2xx status: " + response.getStatusCode());
+      }
+    } catch (RestClientException e) {
+      log.error("Failed to call AI v1 categories/predict endpoint", e);
+      throw new AiServiceException("AI service unavailable", e);
+    }
+  }
+
+  /**
+   * Call AI v1 /anomalies/score endpoint for anomaly detection.
+   *
+   * @param request Anomaly score request
+   * @return Anomaly scores with labels and explanations
+   */
+  public AnomalyScoreResponse scoreAnomalies(AnomalyScoreRequest request) {
+    try {
+      String url = aiBaseUrl + "/v1/anomalies/score";
+      HttpHeaders headers = new HttpHeaders();
+      headers.setContentType(MediaType.APPLICATION_JSON);
+      HttpEntity<AnomalyScoreRequest> httpRequest = new HttpEntity<>(request, headers);
+
+      ResponseEntity<AnomalyScoreResponse> response =
+          restTemplate.postForEntity(url, httpRequest, AnomalyScoreResponse.class);
+
+      if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+        return response.getBody();
+      } else {
+        throw new AiServiceException(
+            "AI service returned non-2xx status: " + response.getStatusCode());
+      }
+    } catch (RestClientException e) {
+      log.error("Failed to call AI v1 anomalies/score endpoint", e);
+      throw new AiServiceException("AI service unavailable", e);
+    }
+  }
+
+  // ==========================================================================
+  // Legacy Endpoints (Backward Compatibility)
+  // ==========================================================================
 
   /**
    * Call AI /analyze endpoint to get spending summary.

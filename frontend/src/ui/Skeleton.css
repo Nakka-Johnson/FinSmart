@@ -1,0 +1,136 @@
+.ui-skeleton {
+  background-color: var(--color-bg-muted);
+  display: block;
+}
+
+/* Variants */
+.ui-skeleton--text {
+  height: 1em;
+  border-radius: var(--radius-sm);
+  transform-origin: 0 55%;
+}
+
+.ui-skeleton--circular {
+  border-radius: 50%;
+}
+
+.ui-skeleton--rectangular {
+  border-radius: 0;
+}
+
+.ui-skeleton--rounded {
+  border-radius: var(--radius-md);
+}
+
+/* Pulse animation */
+.ui-skeleton--pulse {
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Wave animation */
+.ui-skeleton--wave {
+  position: relative;
+  overflow: hidden;
+}
+
+.ui-skeleton--wave::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  animation: skeleton-wave 1.6s linear infinite;
+}
+
+[data-theme='light'] .ui-skeleton--wave::after {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+}
+
+@keyframes skeleton-wave {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Preset: Skeleton text */
+.ui-skeleton-text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* Preset: Skeleton card */
+.ui-skeleton-card {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background-color: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+}
+
+.ui-skeleton-card__content {
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* Preset: Skeleton table row */
+.ui-skeleton-table-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: var(--space-4);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* Preset: Skeleton chart */
+.ui-skeleton-chart {
+  display: flex;
+  align-items: flex-end;
+  padding: var(--space-4);
+  background-color: var(--color-bg-elevated);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+}
+
+.ui-skeleton-chart__bars {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-2);
+  width: 100%;
+  height: 100%;
+}
+
+.ui-skeleton-chart__bars .ui-skeleton {
+  flex: 1;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .ui-skeleton--pulse,
+  .ui-skeleton--wave::after {
+    animation: none;
+  }
+}

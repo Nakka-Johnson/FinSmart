@@ -279,6 +279,19 @@ tbody tr:hover {
   gap: 0.5rem;
 }
 
+/* ===== Transaction Amounts ===== */
+.amount-positive {
+  color: var(--color-positive, #16a34a);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.amount-negative {
+  color: var(--color-danger, #dc2626);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
 /* ===== Login Page ===== */
 .login-page {
   min-height: 100vh;

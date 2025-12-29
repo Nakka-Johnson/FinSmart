@@ -1,4 +1,6 @@
-/* Import theme variables and global styles */
+/* Import design system tokens */
+@import './ui/tokens.css';
+/* Legacy theme variables (for backwards compatibility) */
 @import './styles/theme.css';
 
 /* Minimal CSS Reset */

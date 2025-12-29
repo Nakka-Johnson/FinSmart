@@ -1,0 +1,60 @@
+{
+  "version": "v20251229_142357",
+  "createdAt": "2025-12-29T14:24:02.568706",
+  "dataHash": "d57c4d69efdc5003",
+  "metrics": {
+    "training_samples": 503,
+    "data_hash": "d57c4d69efdc5003",
+    "merchant": {
+      "n_canonical_merchants": 55
+    },
+    "category": {
+      "n_samples": 503,
+      "n_classes": 10,
+      "n_features": 107,
+      "cv_accuracy_mean": 0.9185148514851486,
+      "cv_accuracy_std": 0.030946890448453522
+    },
+    "anomaly": {
+      "n_samples": 500,
+      "n_anomalies_detected": 25,
+      "anomaly_rate": 0.05,
+      "n_categories": 8,
+      "n_merchants": 54
+    }
+  },
+  "categories": [
+    "Bills",
+    "Dining",
+    "Entertainment",
+    "Groceries",
+    "Health",
+    "Income",
+    "Rent",
+    "Shopping",
+    "Transfer",
+    "Transport"
+  ],
+  "canonical_merchants": [
+    "waitrose",
+    "op",
+    "trainline",
+    "tfl",
+    "lidl",
+    "lloyds pharmacy",
+    "asda",
+    "argos",
+    "bp",
+    "british gas",
+    "shell",
+    "primark",
+    "tesco",
+    "just eat",
+    "nhs",
+    "uber eats",
+    "odeon",
+    "morrisons",
+    "costa",
+    "ebay"
+  ]
+}

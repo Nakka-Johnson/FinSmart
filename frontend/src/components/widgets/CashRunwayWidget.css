@@ -1,0 +1,74 @@
+.cash-runway-widget {
+  height: 100%;
+}
+
+.cash-runway-widget__skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.cash-runway-widget__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-4);
+}
+
+.cash-runway-widget__balance {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.cash-runway-widget__label {
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: var(--weight-medium);
+}
+
+.cash-runway-widget__value {
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-bold);
+  color: var(--color-text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.cash-runway-widget__days {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-1);
+}
+
+.cash-runway-widget__days-value {
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-bold);
+  color: var(--status-color, var(--color-text-primary));
+  font-variant-numeric: tabular-nums;
+}
+
+.cash-runway-widget__days-label {
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+}
+
+.cash-runway-widget__chart {
+  margin: 0 calc(var(--space-4) * -1);
+}
+
+.cash-runway-widget__demo-badge {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  background-color: var(--color-warning-subtle);
+  color: var(--color-warning-text);
+  font-size: 10px;
+  font-weight: var(--weight-semibold);
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}

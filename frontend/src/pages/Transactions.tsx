@@ -14,6 +14,9 @@ import { Card } from '@/components/Card';
 import { Loader } from '@/components/Loader';
 import { useToast } from '@/hooks/useToast';
 import { formatCurrency, formatDate } from '@/utils/format';
+import { MerchantChip } from '@/components/MerchantChip';
+import { CategoryPill } from '@/components/CategoryPill';
+import { WhyDrawer } from '@/components/WhyDrawer';
 
 interface Filters {
   accountId?: string;
@@ -21,6 +24,14 @@ interface Filters {
   startDate?: string;
   endDate?: string;
   direction?: 'IN' | 'OUT' | 'ALL';
+}
+
+interface WhyDrawerState {
+  open: boolean;
+  transactionId: number;
+  type: 'category' | 'anomaly';
+  currentValue: string;
+  confidence?: number;
 }
 
 export function Transactions() {
@@ -57,6 +68,25 @@ export function Transactions() {
   const [importLoading, setImportLoading] = useState(false);
   const [previewData, setPreviewData] = useState<ImportPreviewResponse | null>(null);
   const [applySuggestions, setApplySuggestions] = useState(true);
+
+  // Why drawer state
+  const [whyDrawer, setWhyDrawer] = useState<WhyDrawerState>({
+    open: false,
+    transactionId: 0,
+    type: 'category',
+    currentValue: '',
+  });
+
+  const openWhyDrawer = (transaction: TransactionResponse) => {
+    const categoryName = categories.find(c => c.id === transaction.categoryId)?.name || 'Unknown';
+    setWhyDrawer({
+      open: true,
+      transactionId: parseInt(transaction.id),
+      type: 'category',
+      currentValue: categoryName,
+      confidence: transaction.categoryConfidence,
+    });
+  };
 
   const loadTransactions = useCallback(async () => {
     if (!token) return;
@@ -421,49 +451,66 @@ export function Transactions() {
                       type="checkbox"
                       checked={transactions.length > 0 && selectedIds.size === transactions.length}
                       onChange={handleSelectAll}
+                      aria-label="Select all transactions"
                     />
                   </th>
                   <th>Date</th>
+                  <th>Merchant</th>
                   <th>Amount</th>
-                  <th>Direction</th>
                   <th>Category</th>
-                  <th>Description</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {transactions.map(t => (
-                  <tr key={t.id}>
-                    <td>
-                      <input
-                        type="checkbox"
-                        checked={selectedIds.has(t.id)}
-                        onChange={e => handleSelectOne(t.id, e.target.checked)}
-                      />
-                    </td>
-                    <td>{formatDate(t.transactionDate)}</td>
-                    <td>{formatCurrency(t.amount)}</td>
-                    <td>
-                      <span className={`badge badge-${t.direction === 'IN' ? 'success' : 'error'}`}>
-                        {t.direction}
-                      </span>
-                    </td>
-                    <td>{categories.find(c => c.id === t.categoryId)?.name || '-'}</td>
-                    <td>{t.description || '-'}</td>
-                    <td>
-                      <button onClick={() => handleEditClick(t)} className="btn btn-small">
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(t.id)}
-                        className="btn btn-small btn-danger"
-                        style={{ marginLeft: '0.5rem' }}
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {transactions.map(t => {
+                  const categoryName = categories.find(c => c.id === t.categoryId)?.name || 'Other';
+                  return (
+                    <tr key={t.id}>
+                      <td>
+                        <input
+                          type="checkbox"
+                          checked={selectedIds.has(t.id)}
+                          onChange={e => handleSelectOne(t.id, e.target.checked)}
+                          aria-label={`Select transaction ${t.description}`}
+                        />
+                      </td>
+                      <td>{formatDate(t.transactionDate)}</td>
+                      <td>
+                        <MerchantChip
+                          original={t.description || 'Unknown'}
+                          normalised={t.normalizedMerchant}
+                          confidence={t.merchantConfidence}
+                          showOriginal={!!t.normalizedMerchant && t.normalizedMerchant !== t.description}
+                        />
+                      </td>
+                      <td className={t.direction === 'IN' ? 'amount-positive' : 'amount-negative'}>
+                        {t.direction === 'IN' ? '+' : '-'}{formatCurrency(t.amount)}
+                      </td>
+                      <td>
+                        <CategoryPill
+                          category={categoryName}
+                          confidence={t.categoryConfidence}
+                          onClick={() => openWhyDrawer(t)}
+                          showConfidence={t.categoryConfidence !== undefined}
+                        />
+                      </td>
+                      <td>
+                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                          <button onClick={() => handleEditClick(t)} className="btn btn-small" aria-label="Edit transaction">
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDelete(t.id)}
+                            className="btn btn-small btn-danger"
+                            aria-label="Delete transaction"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
 
@@ -840,6 +887,16 @@ export function Transactions() {
           </div>
         </div>
       )}
+
+      {/* Why Drawer for category explanation */}
+      <WhyDrawer
+        open={whyDrawer.open}
+        onClose={() => setWhyDrawer(prev => ({ ...prev, open: false }))}
+        transactionId={whyDrawer.transactionId}
+        type={whyDrawer.type}
+        currentValue={whyDrawer.currentValue}
+        confidence={whyDrawer.confidence}
+      />
     </div>
   );
 }

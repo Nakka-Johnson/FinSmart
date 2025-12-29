@@ -4,6 +4,27 @@ uvicorn[standard]==0.32.1
 pydantic==2.10.3
 pydantic-settings==2.6.1
 
-# Data handling (minimal usage for statistics in service.py)
-# Note: We use Python's built-in statistics module, not pandas
-# pandas==2.2.3  # Commented out - not needed for lightweight analytics
+# =============================================================================
+# Machine Learning - Real AI v1
+# =============================================================================
+
+# Data processing
+pandas>=2.1.0
+numpy>=1.26.0
+
+# ML models
+scikit-learn>=1.4.0
+joblib>=1.3.0
+
+# Text embeddings (optional, falls back to TF-IDF if unavailable)
+sentence-transformers>=2.2.0
+
+# Vector search (optional, falls back to numpy cosine similarity)
+faiss-cpu>=1.7.4
+
+# =============================================================================
+# Notes:
+# - sentence-transformers downloads ~90MB model on first use
+# - faiss-cpu may fail on some Windows installs; numpy fallback works fine
+# - For minimal install: pip install pandas numpy scikit-learn joblib
+# =============================================================================

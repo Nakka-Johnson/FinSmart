@@ -8,6 +8,7 @@
 import { useState, useEffect } from 'react';
 import './InsightsPage.css';
 import { FeatureGate } from '@/components/FeatureGate';
+import { useAuthStore } from '../store/auth';
 import {
   BarChart,
   Bar,
@@ -62,11 +63,12 @@ export function InsightsPage() {
   const [anomalies, setAnomalies] = useState<Anomaly[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const token = useAuthStore(state => state.token);
 
   // Load data on mount
   useEffect(() => {
-    loadInsights();
-  }, []);
+    if (token) loadInsights();
+  }, [token]);
 
   async function loadInsights() {
     setLoading(true);
@@ -74,11 +76,17 @@ export function InsightsPage() {
 
     try {
       const apiBase = import.meta.env.VITE_API_BASE || 'http://localhost:8081';
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
 
       // Load both merchants and anomalies in parallel
       const [merchantsRes, anomaliesRes] = await Promise.all([
-        fetch(`${apiBase}/api/insights/merchants`),
-        fetch(`${apiBase}/api/insights/anomalies`),
+        fetch(`${apiBase}/api/insights/merchants`, { headers }),
+        fetch(`${apiBase}/api/insights/anomalies`, { headers }),
       ]);
 
       if (!merchantsRes.ok || !anomaliesRes.ok) {

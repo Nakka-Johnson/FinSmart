@@ -1,0 +1,392 @@
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--color-bg);
+}
+
+/* Sidebar */
+.app-shell__sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: var(--z-fixed);
+  display: flex;
+  flex-direction: column;
+  width: 260px;
+  height: 100vh;
+  background-color: var(--color-bg-elevated);
+  border-right: 1px solid var(--color-border);
+  transition: width var(--transition-normal), transform var(--transition-normal);
+}
+
+.app-shell--collapsed .app-shell__sidebar {
+  width: 72px;
+}
+
+/* Sidebar header */
+.app-shell__sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  min-height: 64px;
+}
+
+.app-shell__logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.app-shell__logo-text {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+
+.app-shell__collapse-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-text-tertiary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.app-shell__collapse-btn:hover {
+  background-color: var(--color-bg-muted);
+  color: var(--color-text-primary);
+}
+
+.app-shell--collapsed .app-shell__collapse-btn {
+  margin: 0 auto;
+}
+
+/* Navigation */
+.app-shell__nav {
+  flex: 1;
+  padding: var(--space-3);
+  overflow-y: auto;
+}
+
+.app-shell__nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  transition: all var(--transition-fast);
+  margin-bottom: var(--space-1);
+}
+
+.app-shell__nav-item:hover {
+  background-color: var(--color-bg-muted);
+  color: var(--color-text-primary);
+}
+
+.app-shell__nav-item--active {
+  background-color: var(--color-primary-subtle);
+  color: var(--color-primary);
+}
+
+.app-shell__nav-item--active:hover {
+  background-color: var(--color-primary-subtle);
+  color: var(--color-primary);
+}
+
+.app-shell__nav-icon {
+  display: flex;
+  flex-shrink: 0;
+}
+
+.app-shell__nav-label {
+  white-space: nowrap;
+}
+
+.app-shell--collapsed .app-shell__nav-item {
+  justify-content: center;
+  padding: var(--space-2);
+}
+
+/* Sidebar footer */
+.app-shell__sidebar-footer {
+  padding: var(--space-3);
+  border-top: 1px solid var(--color-border);
+}
+
+.app-shell__theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.app-shell__theme-toggle:hover {
+  background-color: var(--color-bg-muted);
+  color: var(--color-text-primary);
+}
+
+.app-shell--collapsed .app-shell__theme-toggle {
+  justify-content: center;
+  padding: var(--space-2);
+}
+
+/* Main content area */
+.app-shell__main {
+  flex: 1;
+  margin-left: 260px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  transition: margin-left var(--transition-normal);
+}
+
+.app-shell--collapsed .app-shell__main {
+  margin-left: 72px;
+}
+
+/* Top bar */
+.app-shell__topbar {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  height: 64px;
+  padding: 0 var(--space-6);
+  background-color: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.app-shell__mobile-menu-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.app-shell__search-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background-color: var(--color-bg-muted);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-tertiary);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  min-width: 280px;
+}
+
+.app-shell__search-btn:hover {
+  background-color: var(--color-bg-hover);
+  border-color: var(--color-border-hover);
+}
+
+.app-shell__search-btn kbd {
+  margin-left: auto;
+  padding: 2px 6px;
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+}
+
+.app-shell__topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-left: auto;
+}
+
+.app-shell__notification-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.app-shell__notification-btn:hover {
+  background-color: var(--color-bg-muted);
+  color: var(--color-text-primary);
+}
+
+.app-shell__notification-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 8px;
+  height: 8px;
+  background-color: var(--color-danger);
+  border-radius: 50%;
+}
+
+/* User menu */
+.app-shell__user-menu {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-bg-elevated);
+}
+
+.app-shell__user-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--color-primary);
+  color: white;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+}
+
+.app-shell__user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.app-shell__user-name {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-primary);
+}
+
+.app-shell__logout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-tertiary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.app-shell__logout-btn:hover {
+  background-color: var(--color-bg-muted);
+  color: var(--color-danger);
+}
+
+/* Content area */
+.app-shell__content {
+  flex: 1;
+  padding: var(--space-6);
+}
+
+/* Mobile overlay */
+.app-shell__overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-fixed) - 1);
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .app-shell__sidebar {
+    transform: translateX(-100%);
+  }
+
+  .app-shell__sidebar--open {
+    transform: translateX(0);
+  }
+
+  .app-shell--collapsed .app-shell__sidebar {
+    width: 260px;
+  }
+
+  .app-shell__main {
+    margin-left: 0;
+  }
+
+  .app-shell--collapsed .app-shell__main {
+    margin-left: 0;
+  }
+
+  .app-shell__mobile-menu-btn {
+    display: flex;
+  }
+
+  .app-shell__overlay {
+    display: block;
+  }
+
+  .app-shell__collapse-btn {
+    display: none;
+  }
+
+  .app-shell__search-btn {
+    min-width: auto;
+  }
+
+  .app-shell__search-btn span {
+    display: none;
+  }
+
+  .app-shell__search-btn kbd {
+    display: none;
+  }
+
+  .app-shell__user-info {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .app-shell__topbar {
+    padding: 0 var(--space-4);
+  }
+
+  .app-shell__content {
+    padding: var(--space-4);
+  }
+}

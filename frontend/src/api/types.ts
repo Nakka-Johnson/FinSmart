@@ -16,10 +16,10 @@ export interface AuthResponse {
 }
 
 export interface UserResponse {
-  id: string;
+  userId: string;
   email: string;
   fullName: string;
-  createdAt: string;
+  token?: string | null;
 }
 
 // Category types
@@ -63,6 +63,12 @@ export interface TransactionResponse {
   description?: string;
   transactionDate: string;
   createdAt: string;
+  // AI enhancement fields
+  normalizedMerchant?: string;
+  merchantConfidence?: number;
+  predictedCategoryId?: string;
+  categoryConfidence?: number;
+  anomalyScore?: number;
 }
 
 export interface TransactionRequest {

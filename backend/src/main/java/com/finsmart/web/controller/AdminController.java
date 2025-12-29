@@ -3,6 +3,8 @@ package com.finsmart.web.controller;
 import com.finsmart.service.DemoDataService;
 import com.finsmart.service.DemoDataService.ClearResult;
 import com.finsmart.service.DemoDataService.SeedResult;
+import com.finsmart.service.UkDemoDataService;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminController {
 
   private final DemoDataService demoDataService;
+  private final UkDemoDataService ukDemoDataService;
+  private final AuthenticationHelper authenticationHelper;
 
   @PostMapping("/seed")
   @PreAuthorize("hasRole('ADMIN')")
@@ -47,6 +51,54 @@ public class AdminController {
     return ResponseEntity.ok(
         new DemoClearResponse(
             "Demo data cleared successfully",
+            result.usersDeleted(),
+            result.accountsDeleted(),
+            result.categoriesDeleted(),
+            result.transactionsDeleted(),
+            result.budgetsDeleted(),
+            result.rulesDeleted()));
+  }
+
+  // =====================================================================
+  // User-scoped UK demo data endpoints (for current authenticated user)
+  // =====================================================================
+
+  /**
+   * Seed UK demo data for the current authenticated user. Does not require ADMIN role - any
+   * authenticated user can seed their own data.
+   */
+  @PostMapping("/uk/seed")
+  public ResponseEntity<DemoSeedResponse> seedUkDemoData() {
+    UUID userId = authenticationHelper.getCurrentUserId();
+    log.info("Seeding UK demo data for user: {}", userId);
+
+    UkDemoDataService.SeedResult result = ukDemoDataService.seedUkDemoData(userId);
+
+    return ResponseEntity.ok(
+        new DemoSeedResponse(
+            "UK demo data seeded successfully for user",
+            result.usersCreated(),
+            result.accountsCreated(),
+            result.categoriesCreated(),
+            result.transactionsCreated(),
+            result.budgetsCreated(),
+            result.rulesCreated()));
+  }
+
+  /**
+   * Clear demo data for the current authenticated user. Only clears data with demo marker, safe for
+   * user data.
+   */
+  @PostMapping("/uk/clear")
+  public ResponseEntity<DemoClearResponse> clearUkDemoData() {
+    UUID userId = authenticationHelper.getCurrentUserId();
+    log.info("Clearing UK demo data for user: {}", userId);
+
+    UkDemoDataService.ClearResult result = ukDemoDataService.clearDemoData(userId);
+
+    return ResponseEntity.ok(
+        new DemoClearResponse(
+            "Demo data cleared successfully for user",
             result.usersDeleted(),
             result.accountsDeleted(),
             result.categoriesDeleted(),

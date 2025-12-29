@@ -6,11 +6,16 @@ interface GuardProps {
 }
 
 export function Guard({ children }: GuardProps) {
-  const isAuthenticated = useAuthStore(state => state.isAuthenticated());
+  const token = useAuthStore(state => state.token);
+  const user = useAuthStore(state => state.user);
 
-  if (!isAuthenticated) {
+  console.log('[Guard] Checking auth:', { hasToken: !!token, hasUser: !!user });
+
+  if (!token || !user) {
+    console.log('[Guard] Not authenticated, redirecting to login');
     return <Navigate to="/login" replace />;
   }
 
+  console.log('[Guard] Authenticated, rendering children');
   return <>{children}</>;
 }

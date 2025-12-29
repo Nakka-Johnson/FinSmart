@@ -1,0 +1,111 @@
+.category-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  border: none;
+  border-radius: var(--radius-full);
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  cursor: default;
+  transition: all var(--transition-fast);
+  background: transparent;
+}
+
+.category-pill--clickable {
+  cursor: pointer;
+}
+
+.category-pill--clickable:hover {
+  filter: brightness(0.95);
+}
+
+.category-pill--clickable:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.category-pill__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.category-pill__label {
+  white-space: nowrap;
+}
+
+.category-pill__why {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+  margin-left: var(--space-1);
+}
+
+.category-pill--clickable:hover .category-pill__why {
+  opacity: 1;
+}
+
+/* Color schemes */
+.category-pill--emerald {
+  background-color: var(--color-emerald-100);
+  color: var(--color-emerald-700);
+}
+
+[data-theme='dark'] .category-pill--emerald {
+  background-color: rgba(16, 185, 129, 0.15);
+  color: var(--color-emerald-400);
+}
+
+.category-pill--amber {
+  background-color: var(--color-amber-100);
+  color: var(--color-amber-700);
+}
+
+[data-theme='dark'] .category-pill--amber {
+  background-color: rgba(245, 158, 11, 0.15);
+  color: var(--color-amber-400);
+}
+
+.category-pill--blue {
+  background-color: var(--color-blue-100);
+  color: var(--color-blue-700);
+}
+
+[data-theme='dark'] .category-pill--blue {
+  background-color: rgba(59, 130, 246, 0.15);
+  color: var(--color-blue-400);
+}
+
+.category-pill--violet {
+  background-color: var(--color-violet-100);
+  color: var(--color-violet-700);
+}
+
+[data-theme='dark'] .category-pill--violet {
+  background-color: rgba(139, 92, 246, 0.15);
+  color: var(--color-violet-400);
+}
+
+.category-pill--rose {
+  background-color: var(--color-rose-100);
+  color: var(--color-rose-700);
+}
+
+[data-theme='dark'] .category-pill--rose {
+  background-color: rgba(244, 63, 94, 0.15);
+  color: var(--color-rose-400);
+}
+
+.category-pill--slate {
+  background-color: var(--color-slate-100);
+  color: var(--color-slate-600);
+}
+
+[data-theme='dark'] .category-pill--slate {
+  background-color: rgba(148, 163, 184, 0.15);
+  color: var(--color-slate-400);
+}

@@ -130,4 +130,7 @@ class HealthResponse(BaseModel):
     """Response model for GET /health endpoint."""
 
     status: str = Field(..., description="Service health status")
+    version: str = Field("unknown", description="Git version or artefact version")
+    models_loaded: bool = Field(False, description="Whether ML models are loaded")
+    model_version: str | None = Field(None, description="Loaded model version")
 

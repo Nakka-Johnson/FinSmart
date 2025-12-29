@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { authApi } from '@/api/endpoints';
 import { useAuthStore } from '@/store/auth';
@@ -13,8 +13,18 @@ export function Login() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const { setAuth } = useAuthStore();
+  const token = useAuthStore(state => state.token);
+  const user = useAuthStore(state => state.user);
   const navigate = useNavigate();
   const showToast = useToastStore(state => state.showToast);
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (token && user) {
+      console.log('[Login] Already authenticated, redirecting to dashboard');
+      navigate('/dashboard', { replace: true });
+    }
+  }, [token, user, navigate]);
 
   const validate = () => {
     const newErrors: { email?: string; password?: string } = {};
@@ -44,12 +54,17 @@ export function Login() {
     setErrors({});
 
     try {
+      console.log('[Login] Starting login for:', email);
       const authResponse = await authApi.login({ email, password });
+      console.log('[Login] Auth response received:', { token: authResponse.token?.slice(0, 20) + '...' });
       const user = await authApi.me(authResponse.token);
+      console.log('[Login] User fetched:', user);
       setAuth(authResponse.token, user, rememberMe);
+      console.log('[Login] Auth set, navigating to /dashboard');
       showToast('Login successful!', 'success');
-      navigate('/dashboard');
+      navigate('/dashboard', { replace: true });
     } catch (error) {
+      console.error('[Login] Error:', error);
       if (error instanceof HttpError) {
         showToast(error.message, 'error');
       } else {

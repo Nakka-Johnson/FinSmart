@@ -76,6 +76,8 @@ public interface TransactionRepository
   // Delete operations
   int deleteByAccountUserId(UUID userId);
 
+  int deleteByAccountUserIdAndNotesContaining(UUID userId, String marker);
+
   // Sprint-1: Find transactions for insights and anomaly detection
   @Query(
       """

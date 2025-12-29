@@ -1,0 +1,7 @@
+{
+  "n_samples": 500,
+  "n_anomalies_detected": 25,
+  "anomaly_rate": 0.05,
+  "n_categories": 8,
+  "n_merchants": 54
+}
