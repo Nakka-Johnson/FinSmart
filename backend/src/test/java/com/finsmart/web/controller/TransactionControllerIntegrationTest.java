@@ -332,6 +332,8 @@ class TransactionControllerIntegrationTest extends BaseIntegrationTest {
             .description("Test transaction")
             .category(testCategory)
             .build();
-    return transactionRepository.save(transaction);
+    transaction = transactionRepository.save(transaction);
+    entityManager.flush();
+    return transaction;
   }
 }

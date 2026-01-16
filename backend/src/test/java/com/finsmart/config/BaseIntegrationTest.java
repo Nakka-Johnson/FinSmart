@@ -9,6 +9,8 @@ import com.finsmart.domain.repo.AccountRepository;
 import com.finsmart.domain.repo.CategoryRepository;
 import com.finsmart.domain.repo.UserRepository;
 import com.finsmart.security.JwtUtil;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.math.BigDecimal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -42,6 +44,8 @@ public abstract class BaseIntegrationTest {
 
   @Autowired protected JwtUtil jwtUtil;
 
+  @PersistenceContext protected EntityManager entityManager;
+
   /**
    * Creates a test user with the given email and password.
    *
@@ -57,7 +61,9 @@ public abstract class BaseIntegrationTest {
             .passwordHash(passwordEncoder.encode(password))
             .fullName(fullName)
             .build();
-    return userRepository.save(user);
+    user = userRepository.save(user);
+    entityManager.flush();
+    return user;
   }
 
   /**
@@ -88,7 +94,9 @@ public abstract class BaseIntegrationTest {
             .currency("GBP")
             .balance(BigDecimal.valueOf(1000.00))
             .build();
-    return accountRepository.save(account);
+    account = accountRepository.save(account);
+    entityManager.flush();
+    return account;
   }
 
   /**
@@ -100,7 +108,9 @@ public abstract class BaseIntegrationTest {
    */
   protected Category createTestCategory(String name, String color) {
     Category category = Category.builder().name(name).color(color).build();
-    return categoryRepository.save(category);
+    category = categoryRepository.save(category);
+    entityManager.flush();
+    return category;
   }
 
   /**

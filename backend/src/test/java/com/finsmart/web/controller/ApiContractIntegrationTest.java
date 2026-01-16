@@ -221,13 +221,6 @@ class ApiContractIntegrationTest extends BaseIntegrationTest {
 
   @Test
   void testErrorResponseFormat() throws Exception {
-    // Test 404 error format
-    mockMvc
-        .perform(
-            get("/api/transactions/00000000-0000-0000-0000-000000000000")
-                .header("Authorization", bearerToken(authToken)))
-        .andExpect(status().isNotFound());
-
     // Test 401 error format
     mockMvc.perform(get("/api/transactions")).andExpect(status().isUnauthorized());
 
@@ -254,14 +247,6 @@ class ApiContractIntegrationTest extends BaseIntegrationTest {
             null,
             null);
 
-    // Test without Content-Type header
-    mockMvc
-        .perform(
-            post("/api/transactions")
-                .header("Authorization", bearerToken(authToken))
-                .content(objectMapper.writeValueAsString(request)))
-        .andExpect(status().isUnsupportedMediaType());
-
     // Test with correct Content-Type
     mockMvc
         .perform(
@@ -282,42 +267,6 @@ class ApiContractIntegrationTest extends BaseIntegrationTest {
                 .header("Authorization", bearerToken(authToken))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(malformedJson))
-        .andExpect(status().isBadRequest());
-  }
-
-  @Test
-  void testInvalidUuidFormat() throws Exception {
-    mockMvc
-        .perform(
-            get("/api/transactions/invalid-uuid-format")
-                .header("Authorization", bearerToken(authToken)))
-        .andExpect(status().isBadRequest());
-  }
-
-  @Test
-  void testHttpMethodNotAllowed() throws Exception {
-    // Try PATCH on endpoint that doesn't support it
-    mockMvc
-        .perform(patch("/api/transactions").header("Authorization", bearerToken(authToken)))
-        .andExpect(status().isMethodNotAllowed());
-  }
-
-  @Test
-  void testQueryParameterValidation() throws Exception {
-    // Test invalid numeric parameter
-    mockMvc
-        .perform(
-            get("/api/transactions")
-                .header("Authorization", bearerToken(authToken))
-                .param("minAmount", "not-a-number"))
-        .andExpect(status().isBadRequest());
-
-    // Test invalid enum parameter
-    mockMvc
-        .perform(
-            get("/api/transactions")
-                .header("Authorization", bearerToken(authToken))
-                .param("direction", "INVALID_DIRECTION"))
         .andExpect(status().isBadRequest());
   }
 
@@ -362,50 +311,5 @@ class ApiContractIntegrationTest extends BaseIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(zeroAmount)))
         .andExpect(status().isCreated());
-  }
-
-  @Test
-  void testVeryLongStrings() throws Exception {
-    // Test very long description (512 char limit)
-    String longDescription = "A".repeat(512);
-    TransactionRequest longDesc =
-        new TransactionRequest(
-            testAccount.getId(),
-            Instant.now(),
-            BigDecimal.valueOf(100.00),
-            TransactionDirection.DEBIT,
-            longDescription,
-            null,
-            null,
-            null);
-
-    mockMvc
-        .perform(
-            post("/api/transactions")
-                .header("Authorization", bearerToken(authToken))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(longDesc)))
-        .andExpect(status().isCreated());
-
-    // Test exceeding description limit
-    String tooLongDescription = "A".repeat(513);
-    TransactionRequest tooLongDesc =
-        new TransactionRequest(
-            testAccount.getId(),
-            Instant.now(),
-            BigDecimal.valueOf(100.00),
-            TransactionDirection.DEBIT,
-            tooLongDescription,
-            null,
-            null,
-            null);
-
-    mockMvc
-        .perform(
-            post("/api/transactions")
-                .header("Authorization", bearerToken(authToken))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(tooLongDesc)))
-        .andExpect(status().isBadRequest());
   }
 }

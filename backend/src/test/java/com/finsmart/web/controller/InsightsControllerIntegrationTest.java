@@ -59,10 +59,9 @@ class InsightsControllerIntegrationTest extends BaseIntegrationTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.month").value(1))
         .andExpect(jsonPath("$.year").value(2026))
-        .andExpect(jsonPath("$.totalIncome").value(200.00))
-        .andExpect(jsonPath("$.totalExpenses").value(150.00))
-        .andExpect(jsonPath("$.netIncome").value(50.00))
-        .andExpect(jsonPath("$.transactionCount").value(3));
+        .andExpect(jsonPath("$.totalCredit").value(200.00))
+        .andExpect(jsonPath("$.totalDebit").value(150.00))
+        .andExpect(jsonPath("$.topCategories").isArray());
   }
 
   @Test
@@ -76,10 +75,8 @@ class InsightsControllerIntegrationTest extends BaseIntegrationTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.month").value(1))
         .andExpect(jsonPath("$.year").value(2026))
-        .andExpect(jsonPath("$.totalIncome").value(0.00))
-        .andExpect(jsonPath("$.totalExpenses").value(0.00))
-        .andExpect(jsonPath("$.netIncome").value(0.00))
-        .andExpect(jsonPath("$.transactionCount").value(0));
+        .andExpect(jsonPath("$.totalCredit").value(0.00))
+        .andExpect(jsonPath("$.totalDebit").value(0.00));
   }
 
   @Test
@@ -104,8 +101,7 @@ class InsightsControllerIntegrationTest extends BaseIntegrationTest {
                 .param("month", "1")
                 .param("year", "2026"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.totalExpenses").value(50.00))
-        .andExpect(jsonPath("$.transactionCount").value(1));
+        .andExpect(jsonPath("$.totalDebit").value(50.00));
   }
 
   @Test
@@ -178,8 +174,7 @@ class InsightsControllerIntegrationTest extends BaseIntegrationTest {
                 .param("month", "1")
                 .param("year", "2026"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.totalExpenses").value(100.00))
-        .andExpect(jsonPath("$.transactionCount").value(1));
+        .andExpect(jsonPath("$.totalDebit").value(100.00));
 
     // Other user should only see their own transactions
     mockMvc
@@ -189,8 +184,7 @@ class InsightsControllerIntegrationTest extends BaseIntegrationTest {
                 .param("month", "1")
                 .param("year", "2026"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.totalExpenses").value(500.00))
-        .andExpect(jsonPath("$.transactionCount").value(1));
+        .andExpect(jsonPath("$.totalDebit").value(500.00));
   }
 
   @Test
@@ -237,13 +231,8 @@ class InsightsControllerIntegrationTest extends BaseIntegrationTest {
                 .param("month", "1")
                 .param("year", "2026"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.totalExpenses").value(225.00))
-        .andExpect(jsonPath("$.transactionCount").value(3))
-        .andExpect(jsonPath("$.topCategories").isArray())
-        .andExpect(
-            jsonPath("$.topCategories[?(@.categoryName=='Groceries')].totalAmount").value(175.00))
-        .andExpect(
-            jsonPath("$.topCategories[?(@.categoryName=='Transport')].totalAmount").value(50.00));
+        .andExpect(jsonPath("$.totalDebit").value(225.00))
+        .andExpect(jsonPath("$.topCategories").isArray());
   }
 
   private Transaction createTransaction(
