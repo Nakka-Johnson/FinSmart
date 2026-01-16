@@ -4,7 +4,7 @@
 # ============================================================================
 
 # Java Development Kit
-java 17.0.16 (or any Java 17 LTS)
+java 21.0.5 (or any Java 21 LTS)
 
 # Maven (or use included mvnw wrapper)
 maven 3.9.11

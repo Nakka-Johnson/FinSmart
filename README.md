@@ -6,7 +6,7 @@ Personal finance management platform with AI-powered insights.
 
 ```
 finsmart/
-├── backend/          # Spring Boot 3 REST API (Java 17, Maven)
+├── backend/          # Spring Boot 3 REST API (Java 21, Maven)
 ├── frontend/         # Vite + React + TypeScript UI
 ├── ai/               # FastAPI ML service (Python 3.11+)
 ├── infra/            # Infrastructure as code
@@ -16,7 +16,7 @@ finsmart/
 
 ## Prerequisites
 
-- **Java**: 17+
+- **Java**: 21+
 - **Maven**: 3.9+
 - **Node.js**: 18+ (LTS)
 - **Python**: 3.11+
@@ -209,7 +209,7 @@ Backend API runs on port 8081:
 ### Overview
 
 Production deployment uses Docker containers with:
-- **Backend**: Spring Boot 3 (Java 17) in JRE container
+- **Backend**: Spring Boot 3 (Java 21) in JRE container
 - **Frontend**: Static React build served by Nginx
 - **AI**: FastAPI service with Uvicorn
 - **Reverse Proxy**: Caddy 2 for automatic HTTPS and routing
