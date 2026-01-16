@@ -125,7 +125,7 @@ cd backend
 **Frontend:**
 ```powershell
 cd frontend
-rm -rf node_modules package-lock.json
+Remove-Item -Recurse -Force node_modules, package-lock.json
 npm install
 ```
 
@@ -173,7 +173,7 @@ pip install --upgrade -r requirements.txt
 3. **Check environment variables:**
    ```powershell
    # Verify .env file exists
-   cat .env
+   Get-Content .env
    
    # Should contain:
    # DB_URL=jdbc:postgresql://127.0.0.1:5432/finsmartdb
@@ -284,16 +284,16 @@ cd backend
 1. **Check logs:**
    ```powershell
    # Look in backend/logs/ directory
-   cat logs/spring.log
+   Get-Content logs/spring.log
    ```
 
 2. **Verify environment:**
    ```powershell
    # Ensure .env file exists in root
-   ls ../.env
+   Test-Path ../.env
    
    # Check JWT secret is set
-   cat ../.env | findstr JWT_SECRET
+   Get-Content ../.env | Select-String JWT_SECRET
    ```
 
 3. **Clear Maven cache:**
@@ -343,7 +343,7 @@ curl -X GET http://localhost:8081/api/accounts \
 ```powershell
 # Check backend logs
 cd backend
-cat logs/spring.log | Select-String "ERROR"
+Get-Content logs/spring.log | Select-String "ERROR"
 ```
 
 **Common Causes:**
@@ -403,7 +403,7 @@ Restart backend after changing CORS settings.
 cd frontend
 
 # Clear cache and reinstall
-rm -rf node_modules package-lock.json
+Remove-Item -Recurse -Force node_modules, package-lock.json
 npm install
 
 # Try running again
@@ -524,7 +524,7 @@ sessionStorage.getItem('auth-storage')
    npm update
    
    # Or reinstall
-   rm -rf node_modules package-lock.json
+   Remove-Item -Recurse -Force node_modules, package-lock.json
    npm install
    ```
 

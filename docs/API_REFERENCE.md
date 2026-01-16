@@ -91,6 +91,142 @@ components:
           type: string
         path:
           type: string
+    
+    Transaction:
+      type: object
+      required:
+        - accountId
+        - postedAt
+        - amount
+        - direction
+      properties:
+        id:
+          type: string
+          format: uuid
+        accountId:
+          type: string
+          format: uuid
+        postedAt:
+          type: string
+          format: date-time
+        amount:
+          type: number
+          format: decimal
+          minimum: 0
+        direction:
+          type: string
+          enum: [IN, OUT]
+        description:
+          type: string
+          maxLength: 512
+        categoryId:
+          type: string
+          format: uuid
+        categoryName:
+          type: string
+        merchant:
+          type: string
+          maxLength: 255
+        notes:
+          type: string
+          maxLength: 512
+        createdAt:
+          type: string
+          format: date-time
+    
+    Budget:
+      type: object
+      required:
+        - categoryId
+        - month
+        - year
+        - limitAmount
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        categoryId:
+          type: string
+          format: uuid
+        categoryName:
+          type: string
+        month:
+          type: integer
+          minimum: 1
+          maximum: 12
+        year:
+          type: integer
+          minimum: 2000
+        limitAmount:
+          type: number
+          format: decimal
+          minimum: 0
+    
+    Category:
+      type: object
+      required:
+        - name
+        - color
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          maxLength: 100
+        color:
+          type: string
+          pattern: '^#[0-9A-Fa-f]{6}$'
+    
+    Account:
+      type: object
+      required:
+        - name
+        - type
+        - currency
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        name:
+          type: string
+          maxLength: 255
+        institution:
+          type: string
+          maxLength: 255
+        type:
+          type: string
+          enum: [CHECKING, SAVINGS, CREDIT]
+        currency:
+          type: string
+          pattern: '^[A-Z]{3}$'
+        balance:
+          type: number
+          format: decimal
+        createdAt:
+          type: string
+          format: date-time
+    
+    PageResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items: {}
+        page:
+          type: integer
+        size:
+          type: integer
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
 ```
 
 ---

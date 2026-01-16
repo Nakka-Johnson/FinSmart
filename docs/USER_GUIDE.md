@@ -468,6 +468,8 @@ AI-powered analysis that includes:
 
 ### Overview
 
+⚠️ **Important Note**: CSV import UI is not yet implemented in the frontend. This section documents the expected CSV format for future implementation or for advanced users who want to import data via API.
+
 CSV (Comma-Separated Values) import allows you to bulk-import transactions from other financial tools, bank statements, or spreadsheets.
 
 ### CSV Format Specification
@@ -480,9 +482,11 @@ FinSmart accepts CSV files with the following structure:
 |--------|--------|-------------|---------|
 | `date` | YYYY-MM-DD | Transaction date | `2025-01-15` |
 | `amount` | Decimal | Transaction amount (positive) | `45.50` |
-| `direction` | IN/OUT | Money direction | `OUT` |
+| `direction` | IN/OUT | Money direction (IN=income, OUT=expense) | `OUT` |
 | `description` | Text | Transaction description | `Grocery shopping` |
 | `account_name` | Text | Account name (must exist) | `Main Checking` |
+
+**Note on Direction Values**: Use `IN` or `OUT` in CSV files. The API internally uses `CREDIT`/`DEBIT` but accepts `IN`/`OUT` for convenience.
 
 #### Optional Columns
 
@@ -550,7 +554,7 @@ Many banks provide CSV exports. You may need to:
 
 ### Importing CSV Files
 
-**⚠️ Note:** CSV import UI is not yet implemented in the frontend. Use API endpoint directly or implement the feature.
+Since the CSV import UI is not yet implemented, you have two options:
 
 #### Using API Endpoint (Advanced Users)
 
