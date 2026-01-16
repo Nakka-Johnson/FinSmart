@@ -60,7 +60,7 @@ def categorize(req: AnalyzeRequest) -> CategorizeResponse:
         List of category guesses with reasons (aligned by index)
     """
     guesses = service.categorize(req.transactions)
-    return CategorizeResponse(predictions=guesses)
+    return CategorizeResponse(categories=guesses)
 
 
 @router.post("/anomalies", response_model=AnomalyResponse, tags=["insights"])

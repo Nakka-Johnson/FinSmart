@@ -113,7 +113,7 @@ def test_categorize_endpoint(client):
     
     assert response.status_code == 200
     data = response.json()
-    assert "predictions" in data
+    assert "categories" in data
 
 
 def test_anomalies_endpoint(client):
