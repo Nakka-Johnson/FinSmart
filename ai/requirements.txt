@@ -4,6 +4,14 @@ uvicorn[standard]==0.32.1
 pydantic==2.10.3
 pydantic-settings==2.6.1
 
+# Monitoring and observability
+prometheus-fastapi-instrumentator==7.0.0
+sentry-sdk[fastapi]==2.18.0
+
+# Testing dependencies
+pytest==8.3.4
+httpx==0.28.1
+
 # Data handling (minimal usage for statistics in service.py)
 # Note: We use Python's built-in statistics module, not pandas
 # pandas==2.2.3  # Commented out - not needed for lightweight analytics

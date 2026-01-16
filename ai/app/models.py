@@ -82,5 +82,7 @@ class SummaryResponse(BaseModel):
 class HealthResponse(BaseModel):
     """Response model for GET /health endpoint."""
 
-    status: str = Field(..., description="Service health status")
+    status: str = Field(..., description="Service health status (healthy/unhealthy)")
+    service: str = Field(..., description="Service name")
+    uptime_seconds: int = Field(..., description="Service uptime in seconds")
 

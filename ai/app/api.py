@@ -1,5 +1,6 @@
 """API routes for FinSmart AI service."""
 
+import time
 from fastapi import APIRouter
 from app.models import (
     AnalyzeRequest,
@@ -13,11 +14,23 @@ from app import service
 
 router = APIRouter()
 
+# Track service start time for uptime calculation
+_start_time = time.time()
+
 
 @router.get("/health", response_model=HealthResponse, tags=["health"])
 def health() -> HealthResponse:
-    """Health check endpoint."""
-    return HealthResponse(status="ai ok")
+    """
+    Health check endpoint with service status details.
+    
+    Returns service status, uptime, and timestamp for monitoring.
+    """
+    uptime_seconds = int(time.time() - _start_time)
+    return HealthResponse(
+        status="healthy",
+        service="ai",
+        uptime_seconds=uptime_seconds
+    )
 
 
 @router.post("/analyze", response_model=SummaryResponse, tags=["insights"])
@@ -47,7 +60,7 @@ def categorize(req: AnalyzeRequest) -> CategorizeResponse:
         List of category guesses with reasons (aligned by index)
     """
     guesses = service.categorize(req.transactions)
-    return CategorizeResponse(predictions=guesses)
+    return CategorizeResponse(categories=guesses)
 
 
 @router.post("/anomalies", response_model=AnomalyResponse, tags=["insights"])

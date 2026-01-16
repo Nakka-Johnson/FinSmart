@@ -20,6 +20,13 @@ class Settings(BaseSettings):
     API_TITLE: str = "FinSmart AI"
     API_VERSION: str = "1.0.0"
 
+    # Monitoring configuration
+    ENABLE_METRICS: bool = True
+    ENABLE_SENTRY: bool = False
+    SENTRY_DSN: str = ""
+    SENTRY_ENVIRONMENT: str = "development"
+    SENTRY_TRACES_SAMPLE_RATE: float = 1.0
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

@@ -49,7 +49,7 @@ frontend/build/
 # AI (FastAPI / Python)
 # ============================================================================
 ai/.venv/
-ai/__pycache__/
+ai/**/__pycache__/
 ai/*.pyc
 ai/.pytest_cache/
 ai/.mypy_cache/
