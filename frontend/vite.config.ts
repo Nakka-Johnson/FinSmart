@@ -13,4 +13,12 @@ export default defineConfig({
   server: {
     port: 5173,
   },
+  build: {
+    // Ensure service worker is copied to build output
+    rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, 'index.html'),
+      },
+    },
+  },
 })

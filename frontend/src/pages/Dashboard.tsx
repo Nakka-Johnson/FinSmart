@@ -239,13 +239,23 @@ export function Dashboard() {
       </Card>
 
       <Card title="Monthly Insights">
-        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+        <div
+          style={{
+            display: 'flex',
+            gap: '1rem',
+            marginBottom: '1rem',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+          }}
+        >
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <label htmlFor="month-select" style={{ fontWeight: 500 }}>Month:</label>
+            <label htmlFor="month-select" style={{ fontWeight: 500 }}>
+              Month:
+            </label>
             <select
               id="month-select"
               value={selectedMonth}
-              onChange={(e) => setSelectedMonth(Number(e.target.value))}
+              onChange={e => setSelectedMonth(Number(e.target.value))}
               style={{
                 padding: '0.5rem',
                 borderRadius: '4px',
@@ -253,7 +263,7 @@ export function Dashboard() {
                 fontSize: '0.875rem',
               }}
             >
-              {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
+              {Array.from({ length: 12 }, (_, i) => i + 1).map(month => (
                 <option key={month} value={month}>
                   {new Date(2000, month - 1).toLocaleString('en-US', { month: 'long' })}
                 </option>
@@ -262,11 +272,13 @@ export function Dashboard() {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <label htmlFor="year-select" style={{ fontWeight: 500 }}>Year:</label>
+            <label htmlFor="year-select" style={{ fontWeight: 500 }}>
+              Year:
+            </label>
             <select
               id="year-select"
               value={selectedYear}
-              onChange={(e) => setSelectedYear(Number(e.target.value))}
+              onChange={e => setSelectedYear(Number(e.target.value))}
               style={{
                 padding: '0.5rem',
                 borderRadius: '4px',
@@ -274,7 +286,7 @@ export function Dashboard() {
                 fontSize: '0.875rem',
               }}
             >
-              {Array.from({ length: 5 }, (_, i) => now.getFullYear() - 2 + i).map((year) => (
+              {Array.from({ length: 5 }, (_, i) => now.getFullYear() - 2 + i).map(year => (
                 <option key={year} value={year}>
                   {year}
                 </option>
@@ -339,7 +351,14 @@ export function Dashboard() {
             {/* Top Categories */}
             {monthlyInsight.topCategories.length > 0 && (
               <div>
-                <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.75rem', color: '#111827' }}>
+                <h3
+                  style={{
+                    fontSize: '1rem',
+                    fontWeight: 600,
+                    marginBottom: '0.75rem',
+                    color: '#111827',
+                  }}
+                >
                   Top 5 Categories
                 </h3>
                 <table
@@ -351,8 +370,12 @@ export function Dashboard() {
                 >
                   <thead>
                     <tr style={{ background: '#f3f4f6', borderBottom: '2px solid #e5e7eb' }}>
-                      <th style={{ padding: '0.75rem', textAlign: 'left', fontWeight: 600 }}>Category</th>
-                      <th style={{ padding: '0.75rem', textAlign: 'right', fontWeight: 600 }}>Total</th>
+                      <th style={{ padding: '0.75rem', textAlign: 'left', fontWeight: 600 }}>
+                        Category
+                      </th>
+                      <th style={{ padding: '0.75rem', textAlign: 'right', fontWeight: 600 }}>
+                        Total
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -372,7 +395,14 @@ export function Dashboard() {
             {/* Anomalies */}
             {monthlyInsight.anomalies.length > 0 && (
               <div>
-                <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.75rem', color: '#111827' }}>
+                <h3
+                  style={{
+                    fontSize: '1rem',
+                    fontWeight: 600,
+                    marginBottom: '0.75rem',
+                    color: '#111827',
+                  }}
+                >
                   Detected Anomalies
                 </h3>
                 <table
@@ -384,10 +414,18 @@ export function Dashboard() {
                 >
                   <thead>
                     <tr style={{ background: '#f3f4f6', borderBottom: '2px solid #e5e7eb' }}>
-                      <th style={{ padding: '0.75rem', textAlign: 'left', fontWeight: 600 }}>Date</th>
-                      <th style={{ padding: '0.75rem', textAlign: 'left', fontWeight: 600 }}>Category</th>
-                      <th style={{ padding: '0.75rem', textAlign: 'right', fontWeight: 600 }}>Amount</th>
-                      <th style={{ padding: '0.75rem', textAlign: 'right', fontWeight: 600 }}>Z-Score</th>
+                      <th style={{ padding: '0.75rem', textAlign: 'left', fontWeight: 600 }}>
+                        Date
+                      </th>
+                      <th style={{ padding: '0.75rem', textAlign: 'left', fontWeight: 600 }}>
+                        Category
+                      </th>
+                      <th style={{ padding: '0.75rem', textAlign: 'right', fontWeight: 600 }}>
+                        Amount
+                      </th>
+                      <th style={{ padding: '0.75rem', textAlign: 'right', fontWeight: 600 }}>
+                        Z-Score
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -424,7 +462,14 @@ export function Dashboard() {
             {/* Forecast */}
             {monthlyInsight.forecast.length > 0 && (
               <div>
-                <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.75rem', color: '#111827' }}>
+                <h3
+                  style={{
+                    fontSize: '1rem',
+                    fontWeight: 600,
+                    marginBottom: '0.75rem',
+                    color: '#111827',
+                  }}
+                >
                   Next Month Forecast
                 </h3>
                 <table
@@ -436,9 +481,15 @@ export function Dashboard() {
                 >
                   <thead>
                     <tr style={{ background: '#f3f4f6', borderBottom: '2px solid #e5e7eb' }}>
-                      <th style={{ padding: '0.75rem', textAlign: 'left', fontWeight: 600 }}>Category</th>
-                      <th style={{ padding: '0.75rem', textAlign: 'right', fontWeight: 600 }}>Forecast</th>
-                      <th style={{ padding: '0.75rem', textAlign: 'left', fontWeight: 600 }}>Method</th>
+                      <th style={{ padding: '0.75rem', textAlign: 'left', fontWeight: 600 }}>
+                        Category
+                      </th>
+                      <th style={{ padding: '0.75rem', textAlign: 'right', fontWeight: 600 }}>
+                        Forecast
+                      </th>
+                      <th style={{ padding: '0.75rem', textAlign: 'left', fontWeight: 600 }}>
+                        Method
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
