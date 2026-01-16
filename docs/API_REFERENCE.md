@@ -878,7 +878,7 @@ For validation failures (400/422), the response may include field-level details:
   "path": "/api/transactions",
   "errors": {
     "amount": "must be greater than or equal to 0",
-    "direction": "must be one of: IN, OUT"
+    "direction": "must be one of: DEBIT, CREDIT"
   }
 }
 ```

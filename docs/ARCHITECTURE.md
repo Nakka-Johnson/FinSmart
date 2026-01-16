@@ -537,7 +537,7 @@ HTTP Request Flow:
 | account_id | UUID | FOREIGN KEY → accounts(id), NOT NULL | Related account |
 | posted_at | TIMESTAMP | NOT NULL | Transaction post date |
 | amount | NUMERIC(12,2) | NOT NULL, CHECK >= 0 | Transaction amount (positive) |
-| direction | VARCHAR(20) | NOT NULL, CHECK (DEBIT, CREDIT) | Money direction: DEBIT=expense, CREDIT=income (API displays as OUT/IN) |
+| direction | VARCHAR(20) | NOT NULL, CHECK (direction IN ('DEBIT', 'CREDIT')) | Money direction: DEBIT=expense, CREDIT=income (API displays as OUT/IN) |
 | description | VARCHAR(512) | NULL | Transaction description |
 | category_id | UUID | FOREIGN KEY → categories(id), NULL | Transaction category |
 | merchant | VARCHAR(255) | NULL | Merchant name |

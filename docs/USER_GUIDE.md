@@ -476,6 +476,8 @@ CSV (Comma-Separated Values) import allows you to bulk-import transactions from 
 
 FinSmart accepts CSV files with the following structure:
 
+⚠️ **Important**: Use `DEBIT` for expenses and `CREDIT` for income. These match the backend API values. The frontend UI displays these as "OUT" and "IN" for simplicity.
+
 #### Required Columns
 
 | Column | Format | Description | Example |
@@ -485,6 +487,8 @@ FinSmart accepts CSV files with the following structure:
 | `direction` | DEBIT/CREDIT | Money direction (DEBIT=expense, CREDIT=income) | `DEBIT` |
 | `description` | Text | Transaction description | `Grocery shopping` |
 | `account_name` | Text | Account name (must exist) | `Main Checking` |
+
+**Note on Direction Values**: Use `DEBIT` for expenses and `CREDIT` for income in CSV files. This matches the backend API. The frontend UI may display these as "OUT" and "IN" for simplicity.
 
 **Note on Direction Values**: Use `DEBIT` for expenses and `CREDIT` for income in CSV files. This matches the backend API. The frontend UI may display these as "OUT" and "IN" for simplicity.
 

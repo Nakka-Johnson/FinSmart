@@ -30,8 +30,8 @@ java -version
 
 # Should show Java 17 or later
 # If not, install Java 17+ from:
+# - OpenJDK (Eclipse Temurin): https://adoptium.net/
 # - Oracle: https://www.oracle.com/java/technologies/downloads/
-# - OpenJDK: https://adoptium.net/
 ```
 
 **Alternative:** Use Maven wrapper (automatically uses correct Java version)
