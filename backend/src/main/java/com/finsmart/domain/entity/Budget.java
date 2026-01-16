@@ -15,7 +15,7 @@ import lombok.*;
     uniqueConstraints = {
       @UniqueConstraint(
           name = "uk_budget_user_category_month_year",
-          columnNames = {"user_id", "category_id", "month", "year"})
+          columnNames = {"user_id", "category_id", "\"month\"", "\"year\""})
     })
 @Getter
 @Setter
@@ -47,7 +47,7 @@ public class Budget {
 
   @NotNull
   @Min(2000)
-  @Column(nullable = false)
+  @Column(name = "\"year\"", nullable = false)
   private Integer year;
 
   @NotNull
